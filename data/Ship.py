@@ -1,6 +1,6 @@
 import pygame
 from pyganim import PygAnimation
-from math import sin, cos, radians, atan, pi
+from math import sin, cos, radians, pi, atan2
 
 from data.Camera import Camera
 from data.Entity import Entity
@@ -64,26 +64,11 @@ class Ship(Entity):
         )
 
     def render(self):
-        def getSpeedAngle():
-            if self.dx == 0:
-                if self.dy > 0:
-                    return pi / 2
-                else:
-                    return pi / 2 * 3
-            elif self.dx < 0:
-                return pi + atan(self.dy / self.dx)
-            elif self.dx > 0 and self.dy > 0:
-                return atan(self.dy / self.dx)
-            elif self.dx > 0:
-                return atan(self.dy / self.dx) + pi * 2
-
-        def distance(a, b):
-            r1 = a - b
-            if r1 > pi:
-                return 2 * pi - r1
-            elif r1 < -pi:
-                return 2 * pi - r1
-            return r1
+        def distance(angle):
+            v1 = self.dx, self.dy
+            v2 = cos(angle), sin(angle)
+            a = atan2(v1[0] * v2[1] - v1[1] * v2[0], v1[0] * v2[0] + v1[1] * v2[1])
+            return a
 
         # RCS Mode
         if self.rcsMode == 1:
@@ -96,36 +81,23 @@ class Ship(Entity):
             else:
                 if abs(self.da) < .8:
                     self.da = 0
-        elif self.rcsMode == 2:
-            # Prograde
-            self.left = self.right = False
-            sA = getSpeedAngle()
-            aA = radians(self.angle)
-            diff = distance(sA, aA)
-            if diff < -.1:
-                if self.da > -1:
-                    self.left = True
-            elif diff > .1:
-                if self.da < 1:
-                    self.right = True
-            else:
-                if abs(self.da) < 1:
-                    self.da = 0
-        elif self.rcsMode == 3:
-            # Retrograde
-            self.left = self.right = False
-            sA = getSpeedAngle() + pi
-            aA = radians(self.angle)
-            diff = distance(sA, aA)
-            if diff < -.1:
-                if self.da > -1:
-                    self.left = True
-            elif diff > .1:
-                if self.da < 1:
-                    self.right = True
-            else:
-                if abs(self.da) < 1:
-                    self.da = 0
+        elif self.rcsMode == 2 or self.rcsMode == 3:
+            if self.rcsMode == 2:
+                # Prograde
+                diff = distance(radians(self.angle))
+            elif self.rcsMode == 3:
+                # Retrograde
+                diff = distance(radians(self.angle) + pi)
 
+            self.left = self.right = False
+            if diff > .1:
+                if self.da > -1:
+                    self.left = True
+            elif diff < -.1:
+                if self.da < 1:
+                    self.right = True
+            else:
+                if abs(self.da) < 1:
+                    self.da = 0
 
         super().render()
