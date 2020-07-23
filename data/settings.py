@@ -26,6 +26,6 @@ for i in range(1000):
 # Explosion
 img = pygame.image.load('data/img/explosion.png').convert_alpha()
 explode = PygAnimation([[img.subsurface(img.get_width() // 4 * x, img.get_height() // 4 * y,
-                                          img.get_width() // 4, img.get_height() // 4), 100]
-                          for y in range(0, 4) for x in range(0, 4)])
+										  img.get_width() // 4, img.get_height() // 4), 100]
+						  for y in range(0, 4) for x in range(0, 4)])
 explode.play()

@@ -32,33 +32,45 @@ def displayDraw(display, ship, font, mapp, aim):
         3
     )
 
-    # Trace calculation
-    sh = Ship(ship.x, ship.y)
-    sh.dx, sh.dy = ship.dx, ship.dy
-    prevX, prevY = sh.x, sh.y
-    isFreeze = False
-    for _ in range(30):
-        for _ in range(100):
-            sh.applyGravity()
-            if not isFreeze:
-                sh.move()
-        isFreeze = sh.collision()
-
-        # Trace
+    # Trace
+    for i in range(1, len(ship.trace['points'])):
+        p1 = ship.trace['points'][i - 1]
+        p2 = ship.trace['points'][i]
         pygame.draw.line(
             d,
             (100, 100, 100),
             (
-                round(sh.x * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
-                round(sh.y * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
+                round(p1[0] * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
+                round(p1[1] * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
             ),
             (
-                round(prevX * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
-                round(prevY * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
+                round(p2[0] * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
+                round(p2[1] * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
             ),
         )
 
-        prevX, prevY = sh.x, sh.y
+    # Apogee and perigee
+    if ship.trace['apogee']:
+        pygame.draw.circle(
+            d, 
+            (255, 0, 0), 
+            (
+                round(ship.trace['apogee'][0] * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
+                round(ship.trace['apogee'][1] * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
+            ),
+            1
+        ) 
+    if ship.trace['perigee']:
+        pygame.draw.circle(
+            d, 
+            (0, 0, 255), 
+            (
+                round(ship.trace['perigee'][0] * D_SIZE[0] / F_SIZE[0] + D_SIZE[0] / 2), 
+                round(ship.trace['perigee'][1] * D_SIZE[1] / F_SIZE[1] + D_SIZE[1] / 2)
+            ),
+            1
+        )
+
 
     # Heading line
     pygame.draw.line(

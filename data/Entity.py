@@ -1,4 +1,5 @@
 from math import sin, cos, sqrt, radians, asin, pi, degrees
+import pygame
 
 from data.settings import F_SIZE, mapp
 from data.Camera import Camera
@@ -17,6 +18,8 @@ class Entity:
         self.angle = -90
         self.planetAngle = 0
         self.to_explode = False
+        self.trace = {'points': [], 'apogee': [], 'perigee': []}
+        self.image = pygame.Surface((25, 25))
 
     def applyGravity(self):
         dx, dy = self.x - F_SIZE[0] / 2, self.y - F_SIZE[1]/ 2
@@ -81,8 +84,40 @@ class Entity:
             self.dx += Entity.thrust * cos(radians(self.angle))
             self.dy += Entity.thrust * sin(radians(self.angle))
 
+    def updateTrace(self):
+        sh = Entity(self.x, self.y)
+        sh.dx, sh.dy = self.dx, self.dy
+        prevX, prevY = sh.x, sh.y
+        isFreeze = False
+        self.trace = {'points': [[prevX, prevY]], 'apogee': [], 'perigee': []}
+        for _ in range(30):
+            for _ in range(100):
+                sh.applyGravity()
+                if not isFreeze:
+                    sh.move()
+            isFreeze = sh.collision()
+
+            # Apogee and perigee
+            h = sqrt(pow(sh.x - F_SIZE[0] / 2, 2) + pow(sh.y - F_SIZE[1] / 2, 2))
+            if self.trace['perigee']:
+                value = sqrt(pow(self.trace['perigee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['perigee'][1] - F_SIZE[1] / 2, 2))
+                if h < value:
+                    self.trace['perigee'] = [sh.x, sh.y]
+            else:
+                self.trace['perigee'] = [sh.x, sh.y]
+            if self.trace['apogee']:
+                value = sqrt(pow(self.trace['apogee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['apogee'][1] - F_SIZE[1] / 2, 2))
+                if h > value:
+                    self.trace['apogee'] = [sh.x, sh.y]
+            else:
+                self.trace['apogee'] = [sh.x, sh.y]
+
+            self.trace['points'].append([prevX, prevY])
+            prevX, prevY = sh.x, sh.y
+
     def render(self):
         self.applyGravity()
         self.collision()
         self.keyEvent()
         self.move()
+        self.updateTrace()
