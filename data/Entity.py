@@ -98,15 +98,15 @@ class Entity:
             isFreeze = sh.collision()
 
             # Apogee and perigee
-            h = sqrt(pow(sh.x - F_SIZE[0] / 2, 2) + pow(sh.y - F_SIZE[1] / 2, 2))
+            h = pow(sh.x - F_SIZE[0] / 2, 2) + pow(sh.y - F_SIZE[1] / 2, 2)
             if self.trace['perigee']:
-                value = sqrt(pow(self.trace['perigee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['perigee'][1] - F_SIZE[1] / 2, 2))
+                value = pow(self.trace['perigee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['perigee'][1] - F_SIZE[1] / 2, 2)
                 if h < value:
                     self.trace['perigee'] = [sh.x, sh.y]
             else:
                 self.trace['perigee'] = [sh.x, sh.y]
             if self.trace['apogee']:
-                value = sqrt(pow(self.trace['apogee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['apogee'][1] - F_SIZE[1] / 2, 2))
+                value = pow(self.trace['apogee'][0] - F_SIZE[0] / 2, 2) + pow(self.trace['apogee'][1] - F_SIZE[1] / 2, 2)
                 if h > value:
                     self.trace['apogee'] = [sh.x, sh.y]
             else:
