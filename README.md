@@ -6,7 +6,7 @@ Python PyGame lunar lander game
 > # Maneuver
 > **A** - rotate left  
 > **D** - rotate right  
-> **W** - rotate accelerate  
+> **W** - accelerate  
 > **SPACE** - stage cut off  
 > # RCS
 > **KEYPAD 0** - release mode  
